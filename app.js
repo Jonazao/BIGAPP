@@ -13,6 +13,7 @@ db.once('open',()=>{
 
 mongoose.connect('mongodb://localhost:27017/app',{
     useNewUrlParser: true,
+    //Originalmente, el código tría consigo 'useCreateIndex:true, pero al parecer la versión más reciente de mongoose ya no soporta esta opción'/
     useUnifiedTopology: true
 })
 
@@ -41,6 +42,12 @@ app.get('/campgrounds/new', (req, res) => {
     res.render('campgrounds/new');
 })
 
+app.post('/campgrounds', async (req, res) => {
+    const campground = new Campground(req.body.campground);
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id} `)
+})
+
 app.get('campgrounds/:id', async (req, res) => {
 const campground = await Campground.findById(req.params.id)
 res.render('campgrounds/show', {campground})
@@ -52,16 +59,11 @@ app.get('campgrounds/:id/edit', async (req, res) => {
     })
 
 app.put('campgrounds/:id',async (res, req)=>{
-    const id = req.params
+    const {id} = req.params
     const campground = await Campground.findByIdAndUpdate(id,{...req.body.campground})
-    res.redirect(`/campgrounds/${campgrounds._id}`) 
+    res.redirect(`/campgrounds/${campground._id}`) 
 })
 
-app.post('/campgrounds', async (req, res) => {
-    const campground = new Campground(req.body);
-    await campground.save();
-    res.redirect(`/campgrounds/${campground._id} `)
-})
 
 app.delete('/campgrounds/:id', async (req, res) => {
     const { id } = req.params;
