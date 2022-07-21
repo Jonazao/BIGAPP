@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,9 +8,12 @@
 </head>
 <body>
     <h1>Todos los campamentos</h1>
+    <div>
+        <a href="/campgrounds/new">Agregar campamento</a>
+    </div>
         <ul>
             <% for (let c of campgrounds){ %>
-               <li> <a href= "campgrounds/<%= c._id %> "><%= c.title %> </a></li>
+               <li> <a href= "/campgrounds/<%= c._id %> "><%= c.title %> </a></li>
                <% } %>  
         </ul>
 </body>

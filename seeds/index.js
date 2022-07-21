@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const ciudades = require('./ciudades')
 const Campground = require('../models/campground')
-const {nombres, descripciones} = require('./seeds')
+const {places, descriptors} = require('./seeds')
 
 mongoose.connect('mongodb://localhost:27017/app',{
     useNewUrlParser: true,
@@ -18,11 +18,11 @@ const muestra = arr => arr[Math.floor(Math.random()*arr.length)]
 
 const seedDB = async () => {
     await Campground.deleteMany({});
-    for (let i = 0; i<5; i++){          
+    for (let i = 0; i<50; i++){          
+        const rndm = Math.floor(Math.random()*1000 + 1)
         const camp  = new Campground({
-        location: `${ciudades[i].ciudad}, ${ciudades[i].estado} `,
-        title: `${muestra(nombres)}`,
-        description: `${muestra(descripciones)}`     
+        location: `${ciudades[rndm].city}, ${ciudades[rndm].state} `,
+        title: `${muestra(descriptors)} ${muestra(places)}`     
     })
     await camp.save()
 }

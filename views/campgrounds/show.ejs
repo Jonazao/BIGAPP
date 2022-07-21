@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
@@ -10,6 +10,16 @@
 <body>
     <h1><%= campground.title %></h1>
     <h2><%= campground.location %></h2>
+    <p> <a href="/campgrounds/<%=campground._id%>/edit">Editar</a>
+    </p>
+    <p>
+        <form action="/campgrounds/<%=campground._id%>?_method=DELETE" method="POST">
+            <button>BORRAR</button>
+        </form>
+        </p>
+    <p>
+        <footer> <a href="/campgrounds">Inicio</a></footer>
+        </p>
 </body>
 
 </html>
