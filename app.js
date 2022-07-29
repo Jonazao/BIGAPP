@@ -75,5 +75,5 @@ app.listen('5000',()=>{
     console.log('Puerto 5000')
 })
 
-
+console.log(Campground[2]._id)
 
