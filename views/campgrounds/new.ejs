@@ -1,27 +1,38 @@
-
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuevo campamento</title>
-</head>
-
-<body>
-    <form action="/campgrounds" method="POST">
-        <div>
+<% layout('layouts/boilerplate') %> 
+<div class="row">
+    <h1 class="text-center">Nuevo campamento</h1>
+    <div class="col-6 offset-3">
+     <form action="/campgrounds" method="POST">
+        <div class="mb-3">
             <label for="title">Nombre</label>
             <input type="text" id="title" name="campground[title]">
         </div>
-        <div>
+        <div class="mb-3">
             <label for="location">Ubicación</label>
             <input type="text" id="location" name="campground[location]">
         </div>
-        <button>Agregar campamento</button>
+        <div class="mb-3">
+            <label class="form-label" for="image"> Url de la imagen</label>
+            <input class="form-control" type="text" id="image" name="campground[image]">
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="price">Precio</label>
+            <div class="input-group">
+                <span class="input-group-text" id="price-label">$</span>
+                <input type="text" class="form-control" id="price" placeholder="0.00" aria-label="price"
+                    aria-describedby="price-label" name="campground[price]">
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <label class="form-label" for="description">Descripción	</label>
+            <textarea class="form-control" type="text" id="description" name="campground[description]"></textarea>
+        </div>
+        <div class="mb-3">
+        <button class="btn btn-success">Agregar campamento</button>
+        </div>
     </form>
     <a href="/campgrounds">todos los campamentos</a>
+    </div>
+</div>
 
-</body>
-
-</html>

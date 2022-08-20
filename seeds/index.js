@@ -3,7 +3,7 @@ const ciudades = require('./ciudades')
 const Campground = require('../models/campground')
 const {places, descriptors} = require('./seeds')
 
-mongoose.connect('mongodb://localhost:27017/app',{
+mongoose.connect('mongodb://localhost:27017/campgrounds',{
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
@@ -22,11 +22,14 @@ const seedDB = async () => {
         const rndm = Math.floor(Math.random()*1000 + 1)
         const camp  = new Campground({
         location: `${ciudades[rndm].city}, ${ciudades[rndm].state} `,
-        title: `${muestra(descriptors)} ${muestra(places)}`     
+        title: `${muestra(descriptors)} ${muestra(places)}`, 
+        image: 'https://source.unsplash.com/collection/483251',
+        description: 'Descripción generica.tex'  
     })
     await camp.save()
-}
-}    
+}}     
  
-seedDB().then(() => mongoose.connection.close())
+seedDB().then(() => {
+mongoose.connection.close()
+})
 

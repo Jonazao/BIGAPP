@@ -1,9 +1,14 @@
 const express = require('express')
-const app = express()
 const mongoose = require('mongoose')
+const ejsMate = require('ejs-mate')
 const path = require('path')
 const Campground = require('./models/campground')
 const methodOverride = require ('method-override')
+
+mongoose.connect('mongodb://localhost:27017/campgrounds',{
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
 
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'Error de conexión'))
@@ -11,12 +16,10 @@ db.once('open',()=>{
     console.log('Base de datos conectada')
 })
 
-mongoose.connect('mongodb://localhost:27017/app',{
-    useNewUrlParser: true,
-    //Originalmente, el código tría consigo 'useCreateIndex:true, pero al parecer la versión más reciente de mongoose ya no soporta esta opción'/
-    useUnifiedTopology: true
-})
 
+const app = express()
+
+app.engine('ejs', ejsMate)
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 
@@ -27,11 +30,6 @@ app.get('/', (req, res)=>{
     res.render('home')
 })
 
-app.get('/makecampground',async (req, res)=>{
-    const camp = new Campground({title: 'Mi patio', price: 'free', description: 'campamento en mi patio', location: 'afuera de mi casa'})
-    await camp.save()
-    res.send(camp)
-})
 
 app.get('/campgrounds', async (req, res)=>{
     const campgrounds = await Campground.find({})
@@ -48,17 +46,17 @@ app.post('/campgrounds', async (req, res) => {
     res.redirect(`/campgrounds/${campground._id} `)
 })
 
-app.get('campgrounds/:id', async (req, res) => {
+app.get('/campgrounds/:id', async (req, res) => {
 const campground = await Campground.findById(req.params.id)
 res.render('campgrounds/show', {campground})
 })
 
-app.get('campgrounds/:id/edit', async (req, res) => {
+app.get('/campgrounds/:id/edit', async (req, res) => {
     const campground = await Campground.findById(req.params.id)
     res.render('campgrounds/edit', {campground})
     })
 
-app.put('campgrounds/:id',async (res, req)=>{
+app.put('/campgrounds/:id',async (res, req)=>{
     const {id} = req.params
     const campground = await Campground.findByIdAndUpdate(id,{...req.body.campground})
     res.redirect(`/campgrounds/${campground._id}`) 
@@ -75,5 +73,4 @@ app.listen('5000',()=>{
     console.log('Puerto 5000')
 })
 
-console.log(Campground[2]._id)
-
+console.log(Campground.find({}).then((res)=>console.log(res)))
