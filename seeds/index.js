@@ -24,7 +24,8 @@ const seedDB = async () => {
         location: `${ciudades[rndm].city}, ${ciudades[rndm].state} `,
         title: `${muestra(descriptors)} ${muestra(places)}`, 
         image: 'https://source.unsplash.com/collection/483251',
-        description: 'Descripción generica.tex'  
+        description: 'Descripción generica.tex', 
+        price: 1/Math.random()  
     })
     await camp.save()
 }}     
