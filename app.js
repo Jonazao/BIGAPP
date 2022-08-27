@@ -3,11 +3,12 @@ const mongoose = require('mongoose')
 const ejsMate = require('ejs-mate')
 const Joi = require('joi')
 const path = require('path')
-const {campgroundSchema} = require('./joiSchema')
+const {campgroundSchema, reviewSchema} = require('./joiSchema')
 const Campground = require('./models/campground')
 const methodOverride = require ('method-override')
 const ExpressError = require('./utils/ExpressError') //ExpressError es un constructor que permite detectar errores según disponga la necesidad del código
 const catchAsync = require('./utils/catchAsync')//Si no hay errrores asíncronos, catchAsync llaama a una función a que a su vez llama a next
+const review = require('./models/review')
 
 mongoose.connect('mongodb://localhost:27017/campgrounds',{
     useNewUrlParser: true,
@@ -29,6 +30,15 @@ const validar = (req, res, next) => {
         throw new ExpressError(mensaje, 400)
     } else {
         next();
+    }
+}
+const validarRev = (req, res, next)=>{
+    const {error} = reviewSchema.validate(req.body);
+    if (error){
+        const msg = error.details.map(e=>e.message).join(',')
+        throw new ExpressError(msg, 400)
+    } else {
+        next()
     }
 }
 
@@ -60,7 +70,7 @@ app.post('/campgrounds',validar, catchAsync(async (req, res) => {
 }))
 
 app.get('/campgrounds/:id', catchAsync(async (req, res) => {
-const campground = await Campground.findById(req.params.id)
+const campground = await Campground.findById(req.params.id).populate('reviews')
 res.render('campgrounds/show', {campground})
 }))
 
@@ -80,6 +90,22 @@ app.delete('/campgrounds/:id', catchAsync(async (req, res) => {
     const { id } = req.params;
     await Campground.findByIdAndDelete(id);
     res.redirect('/campgrounds');
+}))
+
+app.post('/campgrounds/:id/reviews',validarRev  , catchAsync(async(req, res) => {
+    const campground = await Campground.findById(req.params.id);
+    const rev = new review(req.body.review);
+    campground.reviews.push(rev);
+    await rev.save();
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id}`);
+}))
+
+app.delete('/campgrounds/:id/reviews/:reviewId', catchAsync(async (req, res) => {
+    const { id, reviewId } = req.params;
+    await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });//el operador $pull elimina los caracteres de un string previamente es'ecificados
+    await review.findByIdAndDelete(reviewId);
+    res.redirect(`/campgrounds/${id}`);
 }))
 
 app.all('*',( req, res, next)=>{
