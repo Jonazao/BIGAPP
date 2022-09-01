@@ -3,3 +3,4 @@ module.exports = func =>{
         func(req, res, next).catch(next);
     }
 }
+//Si no hay errrores asíncronos, catchAsync llaama a una función a que a su vez llama a next

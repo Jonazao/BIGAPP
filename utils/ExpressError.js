@@ -7,3 +7,4 @@ class ExpressError extends Error {
 }
 
 module.exports = ExpressError
+//ExpressError es un constructor que permite detectar errores según disponga la necesidad del código
