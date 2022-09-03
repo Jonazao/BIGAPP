@@ -1,13 +1,10 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const ejsMate = require('ejs-mate')
-const Joi = require('joi')
 const path = require('path')
 const {campgroundSchema, reviewSchema} = require('./joiSchema')
-const Campground = require('./models/campground')
 const methodOverride = require ('method-override')
 const ExpressError = require('./utils/ExpressError') 
-const review = require('./models/review')
 const campgrounds = require('./routes/campgrounds')
 const reviews = require ('./routes/reviews')
 const session = require('express-session')
@@ -29,22 +26,11 @@ const app = express()
 
 app.engine('ejs', ejsMate)
 app.set('view engine', 'ejs')
-app.set('v8iews', path.join(__dirname, 'views'))
+app.set('views', path.join(__dirname, 'views'))
 
-
-app.use((req, res, next)=>{
-    res.locals.success = req.flash('succes')
-    res.locals.error = req.flash('error')
-    next();
-})
 app.use(express.urlencoded({extended: true}))
 app.use(methodOverride('_method'))
 app.use(express.static(path.join(__dirname, 'public')))
-app.use('/campgrounds', campgrounds)
-app.use('/campgrounds/:id/reviews', reviews)
-app.use(session(sessionConfig))
-app.use(flash())
-
 const sessionConfig = {
     secret: 'secreto',
     resave: false,
@@ -56,6 +42,15 @@ const sessionConfig = {
 
     }
 }
+app.use(session(sessionConfig))
+app.use(flash())
+app.use((req, res, next)=>{
+    res.locals.success = req.flash('success')
+    res.locals.error = req.flash('error')
+    next();
+})
+app.use('/campgrounds', campgrounds)
+app.use('/campgrounds/:id/reviews', reviews)
 
 app.get('/', (req, res)=>{
     res.render('home')
