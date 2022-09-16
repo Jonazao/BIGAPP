@@ -24,7 +24,14 @@ const seedDB = async () => {
         author: '6317d248e8ff198e0e87e2df',    
         location: `${ciudades[rndm].city}, ${ciudades[rndm].state} `,
         title: `${muestra(descriptors)} ${muestra(places)}`, 
-        image: 'https://source.unsplash.com/collection/483251',
+        images:[{
+            url: 'https://res.cloudinary.com/dv5x8ia6k/image/upload/v1663276871/BigAppJS/Paisaje_de_la_Comarca_bcyuif.jpg',
+            filename:'BigAppJS/Paisaje_de_la_Comarca_bcyuif'
+        },
+    {
+        url:'https://res.cloudinary.com/dv5x8ia6k/image/upload/v1663276658/BigAppJS/d6f95c1813dd4c681c8c796a956fd9a5_bojbr1.jpg',
+        filename: 'BigAppJS/d6f95c1813dd4c681c8c796a956fd9a5_bojbr1'
+    }],
         description: 'Descripción generica.tex', 
         price: 1/Math.random()  
     })
