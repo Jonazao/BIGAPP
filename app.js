@@ -13,11 +13,17 @@ const flash = require('connect-flash')
 const passport = require('passport')
 const User = require('./models/user')
 const LocalStrategy = require('passport-local')
+const helmet = require('helmet')
+const mongoSanitize = require('express-mongo-sanitize')
+
+const MongoDBStore = require('connect-mongo')(session)
+
 
 const campgrounds = require('./routes/campgrounds')
 const reviews = require ('./routes/reviews')
 const users = require ('./routes/users')
 
+//Ademas del servidor local, el de mongo también puede ser usado, regularmente mse adjunta el enlace en un process.env pues este enlace incluye la contraseña
 mongoose.connect('mongodb://localhost:27017/campgrounds',{
     useNewUrlParser: true,
     useUnifiedTopology: true   
@@ -39,8 +45,23 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.urlencoded({extended: true}))
 app.use(methodOverride('_method'))
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(mongoSanitize({
+    replaceWith: '_'
+}))
+
+const store = new MongoDBStore({
+    url: 'mongodb://localhost:27017/campgrounds',
+    secret: 'secreto',
+    touchAfter: 24*60*60
+})
+
+store.on('error', function(err){
+    console.log(err)
+})
 
 const sessionConfig = {
+    store,
+    name: 'session', 
     secret: 'secreto',
     resave: false,
     saveUninitialized: true,
@@ -53,6 +74,7 @@ const sessionConfig = {
 }
 app.use(session(sessionConfig))
 app.use(flash())
+app.use(helmet())
 
 app.use(passport.initialize())
 app.use(passport.session())
@@ -73,6 +95,39 @@ app.use('/', users)
 app.use('/campgrounds', campgrounds)
 app.use('/campgrounds/:id/reviews', reviews)
 
+const scriptSrcUrls = [
+    "https://stackpath.bootstrapcdn.com/",
+    "https://kit.fontawesome.com/",
+    "https://cdnjs.cloudflare.com/",
+    "https://cdn.jsdelivr.net",
+];
+const styleSrcUrls = [
+    "https://kit-free.fontawesome.com/",
+    "https://stackpath.bootstrapcdn.com/",
+    "https://fonts.googleapis.com/",
+    "https://use.fontawesome.com/",
+];
+const fontSrcUrls = [];
+app.use(
+    helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: [],
+            scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+            styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+            workerSrc: ["'self'", "blob:"],
+            objectSrc: [],
+            imgSrc: [
+                "'self'",
+                "blob:",
+                "data:",
+                "https://res.cloudinary.com/dv5x8ia6k",
+                "https://images.unsplash.com/",
+            ],
+            fontSrc: ["'self'", ...fontSrcUrls],
+        },
+    })
+);
+
 app.get('/', (req, res)=>{
     res.render('home')
 })
@@ -80,8 +135,8 @@ app.get('/', (req, res)=>{
 app.all('*',( req, res, next)=>{
     next (new ExpressError('Sitio no encontado', 404))
 })
-app.listen('5000',()=>{
-    console.log('Puerto 5000')
+app.listen('3000',()=>{
+    console.log('Puerto 3000')
 })
 app.use((err, req ,res, next)=>{
     const {statusCode = 500} = err
